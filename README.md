@@ -66,3 +66,18 @@ meal-planner/
 
 Each "Generate" or "Regenerate" action costs roughly $0.01-0.03 in API usage.
 At twice-weekly use with a few regenerations, expect ~$2-5/month.
+
+## Password Protection
+
+The app has a simple password gate to keep random visitors out. To enable it:
+
+1. Add to your `.env.local` (for local dev):
+   ```
+   NEXT_PUBLIC_APP_PASSWORD=your-password-here
+   ```
+
+2. Add the same variable in Vercel's Environment Variables when deploying.
+
+If no password is set, the gate is skipped (convenient for local development).
+
+**Note:** This is a simple client-side gate, not high-security authentication. It's meant to deter casual access, not protect sensitive data.

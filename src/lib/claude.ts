@@ -120,18 +120,17 @@ Only output the JSON, no other text.`;
 
 const GROCERY_SYSTEM_PROMPT = `You consolidate recipe ingredients into an organized grocery list.
 
-Given a list of ingredients with their source recipes, you should:
+Given a list of all ingredients from multiple recipes, you should:
 1. Combine duplicate ingredients (e.g., "2 cloves garlic" + "4 cloves garlic" = "6 cloves garlic")
 2. Organize by grocery store section
-3. Tag each item with which recipe(s) use it in [brackets]
-4. Use consistent formatting
+3. Use consistent formatting
 
 OUTPUT FORMAT:
 {
   "groceryList": [
     {
       "category": "Produce",
-      "items": ["1 Asian pear [Bulgogi]", "6 cloves garlic [Mediterranean Bowls, Bulgogi]", ...]
+      "items": ["item with quantity", ...]
     },
     {
       "category": "Meat & Seafood",
@@ -183,10 +182,10 @@ export async function generateFullMealPlan(): Promise<MealPlan> {
   
   const recipes = JSON.parse(extractJSON(recipeText)) as { lunches: Recipe[]; dinners: Recipe[] };
 
-  // Generate consolidated grocery list with recipe tags
-  const ingredientsWithSources = [
-    ...recipes.lunches.flatMap(r => r.ingredients.map(ing => `${ing} (from: ${r.name})`)),
-    ...recipes.dinners.flatMap(r => r.ingredients.map(ing => `${ing} (from: ${r.name})`))
+  // Generate consolidated grocery list
+  const allIngredients = [
+    ...recipes.lunches.flatMap(r => r.ingredients),
+    ...recipes.dinners.flatMap(r => r.ingredients)
   ];
 
   const groceryResponse = await anthropic.messages.create({
@@ -196,7 +195,7 @@ export async function generateFullMealPlan(): Promise<MealPlan> {
     messages: [
       {
         role: 'user',
-        content: `Consolidate these ingredients into an organized grocery list. Each ingredient shows which recipe it's from:\n\n${ingredientsWithSources.join('\n')}`
+        content: `Consolidate these ingredients into an organized grocery list:\n\n${allIngredients.join('\n')}`
       }
     ]
   });
@@ -244,9 +243,9 @@ export async function regenerateGroceryList(
   lunches: Recipe[],
   dinners: Recipe[]
 ): Promise<GrocerySection[]> {
-  const ingredientsWithSources = [
-    ...lunches.flatMap(r => r.ingredients.map(ing => `${ing} (from: ${r.name})`)),
-    ...dinners.flatMap(r => r.ingredients.map(ing => `${ing} (from: ${r.name})`))
+  const allIngredients = [
+    ...lunches.flatMap(r => r.ingredients),
+    ...dinners.flatMap(r => r.ingredients)
   ];
 
   const response = await anthropic.messages.create({
@@ -256,7 +255,7 @@ export async function regenerateGroceryList(
     messages: [
       {
         role: 'user',
-        content: `Consolidate these ingredients into an organized grocery list. Each ingredient shows which recipe it's from:\n\n${ingredientsWithSources.join('\n')}`
+        content: `Consolidate these ingredients into an organized grocery list:\n\n${allIngredients.join('\n')}`
       }
     ]
   });
