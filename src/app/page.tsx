@@ -138,6 +138,7 @@ export default function Home() {
   const [regeneratingId, setRegeneratingId] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [guidance, setGuidance] = useState('');
 
   const handleGenerate = async () => {
     setIsGenerating(true);
@@ -146,7 +147,8 @@ export default function Home() {
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ guidance: guidance.trim() })
       });
       
       const result = await response.json();
@@ -232,6 +234,14 @@ export default function Home() {
       </header>
 
       <div className={styles.generateSection}>
+        <textarea
+          className={styles.guidanceInput}
+          placeholder="Any guidance? E.g., 'Mediterranean-inspired dishes' or 'use up the chicken in my fridge' (optional)"
+          value={guidance}
+          onChange={(e) => setGuidance(e.target.value)}
+          disabled={isGenerating}
+          rows={2}
+        />
         <button 
           onClick={handleGenerate} 
           disabled={isGenerating}

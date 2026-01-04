@@ -3,7 +3,10 @@ import { generateFullMealPlan } from '@/lib/claude';
 
 export async function POST(request: NextRequest) {
   try {
-    const mealPlan = await generateFullMealPlan();
+    const body = await request.json().catch(() => ({}));
+    const guidance = body.guidance || '';
+    
+    const mealPlan = await generateFullMealPlan(guidance);
     
     return NextResponse.json({
       success: true,
