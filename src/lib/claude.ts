@@ -47,6 +47,13 @@ KEY CONSTRAINTS:
 - Dinners can be heartier
 - No dietary restrictions to worry about
 
+VARIETY IS ESSENTIAL:
+- Never default to "safe" recipes like grain bowls, chickpea salads, or sheet pan chicken
+- Surprise the user with less common dishes, unexpected flavor combinations, and diverse cuisines
+- Draw from the full range of global cuisines: Thai, Mexican, Moroccan, Japanese, Indian, Italian, Greek, Korean, Vietnamese, Cajun, Ethiopian, Peruvian, Turkish, Spanish, Chinese regional, Caribbean, etc.
+- Vary your proteins: don't always reach for chicken—consider fish, shrimp, pork, beef, lamb, tofu, eggs, or legumes
+- Each meal plan should feel distinct from any you've generated before
+
 YOUR TASK:
 Generate meal plans that cover 3 days of eating. You decide the optimal number of recipes based on complexity:
 - For lunches: 1-3 recipes depending on variety and prep simplicity
@@ -175,6 +182,7 @@ export async function generateFullMealPlan(guidance: string = ''): Promise<MealP
   const recipeResponse = await anthropic.messages.create({
     model: 'claude-sonnet-4-20250514',
     max_tokens: 4096,
+    temperature: 1,
     system: SYSTEM_PROMPT,
     messages: [
       {
@@ -229,6 +237,7 @@ export async function regenerateRecipe(
   const response = await anthropic.messages.create({
     model: 'claude-sonnet-4-20250514',
     max_tokens: 2048,
+    temperature: 1,
     system: REGENERATE_PROMPT,
     messages: [
       {
